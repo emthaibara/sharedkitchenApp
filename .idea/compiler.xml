@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="jwt-verifyandauth" />
+        <module name="loginservice-provider" />
+        <module name="api-gateway" />
+        <module name="generatetokenservice-provider" />
+        <module name="eureka-server" />
+        <module name="signservice-provider" />
+        <module name="gateway" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="api-gateway" target="11" />
+      <module name="eureka-server" target="11" />
+      <module name="gateway" target="11" />
+      <module name="generatetokenservice-provider" target="11" />
+      <module name="jwt-verifyandauth" target="11" />
+      <module name="loginservice-provider" target="11" />
+      <module name="sharedkitchen" target="11" />
+      <module name="signservice-provider" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="api-gateway" options="-parameters" />
+      <module name="eureka-server" options="-parameters" />
+      <module name="gateway" options="-parameters" />
+      <module name="generatetokenservice-provider" options="-parameters" />
+      <module name="jwt-verifyandauth" options="-parameters" />
+      <module name="loginservice-provider" options="-parameters" />
+      <module name="sharedkitchen" options="-parameters" />
+      <module name="signservice-provider" options="-parameters" />
+    </option>
+  </component>
+</project>

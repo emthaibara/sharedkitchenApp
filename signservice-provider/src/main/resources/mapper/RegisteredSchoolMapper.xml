@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dachuang.signserviceprovider.dao.RegisteredSchoolMapper" >
+  <resultMap id="BaseResultMap" type="com.dachuang.signserviceprovider.pojo.RegisteredSchool" >
+    <id column="registeredSchool" property="registeredschool" jdbcType="VARCHAR" />
+    <result column="id" property="id" jdbcType="INTEGER" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from LYJ.RegisteredSchool
+    where registeredSchool = #{registeredschool,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.dachuang.signserviceprovider.pojo.RegisteredSchool" >
+    insert into LYJ.RegisteredSchool (registeredSchool, id)
+    values (#{registeredschool,jdbcType=VARCHAR}, #{id,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.dachuang.signserviceprovider.pojo.RegisteredSchool" >
+    update LYJ.RegisteredSchool
+    set id = #{id,jdbcType=INTEGER}
+    where registeredSchool = #{registeredschool,jdbcType=VARCHAR}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select registeredSchool, id
+    from LYJ.RegisteredSchool
+    where registeredSchool = #{registeredschool,jdbcType=VARCHAR}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select registeredSchool
+    from LYJ.RegisteredSchool
+  </select>
+</mapper>
