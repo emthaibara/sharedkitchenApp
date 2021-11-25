@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
-import java.util.Objects;
-
 import static com.auth0.jwt.impl.PublicClaims.ISSUER;
 
 /**
@@ -53,4 +51,5 @@ public class JwtUtils {
         }
         return null;
     }
+
 }
