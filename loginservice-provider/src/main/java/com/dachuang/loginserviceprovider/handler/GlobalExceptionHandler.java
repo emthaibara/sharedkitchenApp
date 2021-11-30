@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @Author:SCBC_LiYongJie
  * @time:2021/11/25
  */
-
 @ControllerAdvice
 public class GlobalExceptionHandler {
 

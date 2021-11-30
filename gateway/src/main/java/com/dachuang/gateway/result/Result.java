@@ -1,10 +1,17 @@
 package com.dachuang.gateway.result;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @Author:SCBC_LiYongJie
  * @time:2021/11/15
  */
 public class Result<T> {
+
+    public static final Logger log = LoggerFactory.getLogger(Result.class);
 
     private Integer code ;
     private String msg;
@@ -32,9 +39,25 @@ public class Result<T> {
     public static Result<String> signSuccess() {
         return new Result<>("Sign success");
     }
+
     public static Result<?> tokenExpired(){
         return new Result<>().error("登陆过期请重新登陆",null);
     }
+
+    public static String resultAsJsonString(Result<?> result){
+        ObjectMapper objectMapper = new ObjectMapper();
+        String json;
+        try {
+            json = objectMapper.writeValueAsString(result);
+            return json;
+        } catch (JsonProcessingException e) {
+            log.error(e.getMessage());
+            return null;
+        }finally {
+            objectMapper.clearProblemHandlers();
+        }
+    }
+
     public int getCode() {
         return code;
     }

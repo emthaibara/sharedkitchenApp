@@ -1,23 +1,19 @@
 package com.dachuang.gateway.config;
 
-import com.dachuang.gateway.filter.TokenFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.StringRedisTemplate;
 
-import javax.annotation.Resource;
 
 /**
  * @Author:SCBC_LiYongJie
  * @time:2021/11/24
  */
-
 @Configuration
-public class GatewayConfig {
-
-    @Resource
-    private TokenFilter tokenFilter;
+public class RouterConfig {
 
     @Bean
     public RouteLocator gateway(RouteLocatorBuilder rlb){
@@ -25,10 +21,18 @@ public class GatewayConfig {
                 .routes()
                 .route(p -> p
                         .path("/sharedkitchen/sign")
-                        //.filters(f -> f.filter(tokenFilter))
                         .uri("lb://signservice-provider"))
+                .route(p -> p
+                        .path("/login")
+                        .uri("lb://loginservice-provider"))
                 .build();
     }
 
+    @Bean
+    public StringRedisTemplate redisTemplate(LettuceConnectionFactory connectionFactory){
+        StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
+        stringRedisTemplate.setConnectionFactory(connectionFactory);
+        return stringRedisTemplate;
+    }
 
 }

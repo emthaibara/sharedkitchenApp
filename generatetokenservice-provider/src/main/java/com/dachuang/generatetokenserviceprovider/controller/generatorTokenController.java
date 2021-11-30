@@ -21,8 +21,8 @@ public class generatorTokenController {
     private JwtUtil jwtUtil;
 
     @GetMapping("/generatortoken")
-    public Result<String> generatorToken(@RequestParam("phoneNumber") String phoneNumber, @RequestParam("role") String role){
-        String token = jwtUtil.generateToken(phoneNumber,role);
-        return new Result<>(token);
+    public String generatorToken(@RequestParam("phoneNumber") String phoneNumber, @RequestParam("role") String role){
+        return jwtUtil.generateToken(phoneNumber,role);
     }
+
 }

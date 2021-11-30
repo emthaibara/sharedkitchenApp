@@ -22,19 +22,17 @@ public class JwtUtil {
     private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
     //设置过期失效
-    private static final long EXPIREDTIME = 1728000000L;
+    private static final long EXPIREDTIME = 15L;
 
-    public static final String TOKENKEY = "salt";
+    public static final String TOKENKEY = "token";
 
     @Resource
     private RedisUtil redisUtil;
 
-
-
     public JwtUtil() {
     }
 
-    //生成token
+    //生成token---这里后期会拓展，暂时测试的负载只有role，后期可能会有更多的数据
     public String generateToken(String username,String role) {
         String salt = BCrypt.gensalt();
         String token = JWT.create()
@@ -45,8 +43,11 @@ public class JwtUtil {
                 .withIssuedAt(new Date())       //发行时间
                 .sign(Algorithm.HMAC256(salt));
         log.info("username:"+username+" token:"+token+" salt:"+salt);
-        //redis缓存token-----salt
-        redisUtil.set(TOKENKEY+token,salt);
+        //redis缓存token-----salt并设置过期时间
+        redisUtil.set(TOKENKEY+token,salt,RedisUtil.TOKEN_EXPIREDTIME);
         return token;
     }
+
+
+
 }
