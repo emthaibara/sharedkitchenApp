@@ -9,36 +9,36 @@ import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
+import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.Resource;
 import java.nio.file.AccessDeniedException;
-import java.util.Collection;
 
 /**
  * @Author:SCBC_LiYongJie
  * @time:2021/11/29
  */
-
+@Component
 public class AuthorizeConfigManager implements ReactiveAuthorizationManager<AuthorizationContext> {
 
     private static final Logger log = LoggerFactory.getLogger(AuthorizeConfigManager.class);
 
-    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
+    @Resource
+    private AntPathMatcher antPathMatcher;
 
     @Override
     public Mono<AuthorizationDecision> check(Mono<Authentication> authentication, AuthorizationContext object) {
+
         return authentication.map(auth -> {
-            ServerWebExchange exchange = object.getExchange();
 
-            ServerHttpRequest request = exchange.getRequest();
+            ServerHttpRequest httpRequest = object.getExchange().getRequest();
 
-            Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
             //遍历权限----当然我这里就一个权限{MOMBEN,NONMEMBER,MERCHANT}
-            for (GrantedAuthority authority : authorities) {
+            for (GrantedAuthority authority : auth.getAuthorities()) {
                 String authorityAuthority = authority.getAuthority();
-                String path = request.getURI().getPath();
+                String path = httpRequest.getURI().getPath();
                 //
                 if (antPathMatcher.match(authorityAuthority, path)) {
                     log.info(String.format("用户请求API校验通过，GrantedAuthority:{%s}  Path:{%s} ", authorityAuthority, path));
@@ -54,10 +54,11 @@ public class AuthorizeConfigManager implements ReactiveAuthorizationManager<Auth
     @Override
     public Mono<Void> verify(Mono<Authentication> authentication, AuthorizationContext object) {
         return check(authentication, object)
+                //返回一个Mono<AuthorizationDecision>类型
                 .filter(AuthorizationDecision::isGranted)
                 .switchIfEmpty(Mono.defer(() -> {
                     Result<?> result = new Result<>().error("当前用户没有访问权限! ", null);
-                    return Mono.error(new AccessDeniedException(Result.resultAsJsonString(result)));
+                    return Mono.error(new AccessDeniedException(Result.resultToJsonString(result)));
                 }))
                 .flatMap(d -> Mono.empty());
     }

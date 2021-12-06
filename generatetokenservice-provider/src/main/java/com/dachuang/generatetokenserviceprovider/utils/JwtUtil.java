@@ -32,7 +32,7 @@ public class JwtUtil {
     public JwtUtil() {
     }
 
-    //生成token---这里后期会拓展，暂时测试的负载只有role，后期可能会有更多的数据
+    //生成token---这里后期会拓展，暂时测试的
     public String generateToken(String username,String role) {
         String salt = BCrypt.gensalt();
         String token = JWT.create()
@@ -47,7 +47,6 @@ public class JwtUtil {
         redisUtil.set(TOKENKEY+token,salt,RedisUtil.TOKEN_EXPIREDTIME);
         return token;
     }
-
 
 
 }

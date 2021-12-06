@@ -44,7 +44,7 @@ public class Result<T> {
         return new Result<>().error("登陆过期请重新登陆",null);
     }
 
-    public static String resultAsJsonString(Result<?> result){
+    public static String resultToJsonString(Result<?> result){
         ObjectMapper objectMapper = new ObjectMapper();
         String json;
         try {
