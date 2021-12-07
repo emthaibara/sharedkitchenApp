@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.util.AntPathMatcher;
+import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import java.util.List;
 public class SecurityConfig {
 
     @Resource
-    private JwtSecurityContextRepository securityContextRepository;
+    private JwtSecurityContextRepository jwtSecurityContextRepository;
 
     @Resource
     @Lazy
@@ -36,40 +37,26 @@ public class SecurityConfig {
     @Resource
     private JwtAuthenticationManager jwtAuthenticationManager;
 
-
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http){
-        return http.securityContextRepository(securityContextRepository)
+        http.authenticationManager(jwtAuthenticationManager)
+                .securityContextRepository(jwtSecurityContextRepository)
                 .authorizeExchange(exchange -> exchange
-                .pathMatchers("/NONMEMBER/*").hasAnyRole("NONMEMBER","MOMBER")
+                        .pathMatchers("/NONMEMBER/*").hasAnyRole("NONMEMBER","MOMBER")
                         .pathMatchers("/MEMBER/*").hasAnyRole("MOMBER","MERCHANT")
                         .pathMatchers("/sharedkitchen/sign").permitAll()
                         .pathMatchers("/sharedkitchen/login").permitAll()
-                .anyExchange().access(authorizeConfigManager)
+                        .anyExchange().access(authorizeConfigManager)
                 )
                 .logout().disable()
                 .formLogin().disable()
                 .cors().disable()
-                .csrf().disable()
-        .build();
+                .csrf().disable();
+        return http.build();
     }
 
     @Bean
     public AntPathMatcher antPathMatcher(){
         return new AntPathMatcher();
     }
-
-    @Bean
-    public ObjectMapper objectMapper(){
-        return new ObjectMapper();
-    }
-
-    @Bean
-    ReactiveAuthenticationManager reactiveAuthenticationManager() {
-        List<ReactiveAuthenticationManager> managers = new ArrayList<>();
-        managers.add(jwtAuthenticationManager);
-        return new DelegatingReactiveAuthenticationManager(managers);
-    }
-
-
 }
