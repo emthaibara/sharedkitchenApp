@@ -3,6 +3,8 @@ package com.dachuang.gateway.filter;
 import com.dachuang.gateway.result.Result;
 import com.dachuang.gateway.util.JwtUtil;
 import com.dachuang.gateway.util.RedisUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
@@ -25,9 +27,11 @@ import java.util.Objects;
 @Component
 public class JwtFilter implements WebFilter {
 
-    private static final String TOKENPREFIX = "token";
+    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
-    private static final long REFRESHTIME = 15L;
+    private static final String TOKENPREFIX = "token";
+    private static final Integer VERIFYSUCCESS = 0;
+    private static final String ROLE = "role";
 
     @Resource
     private RedisUtil redisUtil;
@@ -51,11 +55,23 @@ public class JwtFilter implements WebFilter {
             return Mono.error(new AccessDeniedException(Result.resultToJsonString(new Result<>().error("登陆过期，请重新登陆",null))));
         }
         String salt = redisUtil.get(TOKENPREFIX+token);
-        //判断token是否过期，如果过期则刷新token，修改请求头的token
-        if (jwtUtil.verifier(token,salt) == 2){
 
-        }
+        String newToken;
+        if (!Objects.isNull(newToken = verifyToken(token,salt)))
+            //实际上headers对应的是一个MultiValueMap<K, V> -----> Map<K,V>直接set更改token
+            exchange.getResponse().getHeaders().set("token",newToken);
+
         return chain.filter(exchange);
+    }
+
+    private String verifyToken(String token,String salt) {
+        Integer result = jwtUtil.verifier(token,salt);
+        String verifyMessage = !result.equals(VERIFYSUCCESS) ? null : jwtUtil.getVerifyMessage(token,salt);
+        if (!Objects.isNull(verifyMessage)){
+            log.error("[token-----:]{}[  verify fail ,error message -----:]{}",token,verifyMessage);
+            return null;
+        }
+        return jwtUtil.generateToken(jwtUtil.getSubject(token),jwtUtil.getDecodedJWT(token).getClaim(ROLE).asString());
     }
 
     //判断是否需要刷新token

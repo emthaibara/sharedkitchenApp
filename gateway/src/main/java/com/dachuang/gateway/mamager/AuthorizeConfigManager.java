@@ -39,6 +39,7 @@ public class AuthorizeConfigManager implements ReactiveAuthorizationManager<Auth
             for (GrantedAuthority authority : auth.getAuthorities()) {
                 String authorityAuthority = authority.getAuthority();
                 String path = httpRequest.getURI().getPath();
+                log.info("authorityAuthority:"+authorityAuthority+"       path:"+path);
                 //
                 if (antPathMatcher.match(authorityAuthority, path)) {
                     log.info(String.format("用户请求API校验通过，GrantedAuthority:{%s}  Path:{%s} ", authorityAuthority, path));
