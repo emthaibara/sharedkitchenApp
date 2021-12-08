@@ -2,6 +2,8 @@ package com.dachuang.gateway.config;
 
 import com.dachuang.gateway.mamager.JwtAuthenticationManager;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -21,9 +23,9 @@ import javax.annotation.Resource;
 @Component
 public class JwtSecurityContextRepository implements ServerSecurityContextRepository {
 
-    public final static String TOKENHEADER = "token";
+    private static final Logger log = LoggerFactory.getLogger(JwtSecurityContextRepository.class);
 
-    public final static String BEARER = "Bearer ";
+    public final static String TOKENHEADER = "token";
 
     @Resource
     private JwtAuthenticationManager jwtAuthenticationManager;
@@ -35,17 +37,10 @@ public class JwtSecurityContextRepository implements ServerSecurityContextReposi
 
     @Override
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
-        ServerHttpRequest request = exchange.getRequest();
-        String authorization = request.getHeaders().getFirst(TOKENHEADER);
-            if (StringUtils.isNotEmpty(authorization)) {
-                String token = authorization.substring(BEARER.length());
-                if (StringUtils.isNotEmpty(token)) {
-                    return jwtAuthenticationManager.authenticate(
-                            new UsernamePasswordAuthenticationToken(token, null)
-                    ).map(SecurityContextImpl::new);
-                }
-            }
-        return Mono.empty();
+        String token = exchange.getRequest().getHeaders().getFirst(TOKENHEADER);
+        log.info(token);
+        return jwtAuthenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(token, null)
+        ).map(SecurityContextImpl::new);
     }
-
 }

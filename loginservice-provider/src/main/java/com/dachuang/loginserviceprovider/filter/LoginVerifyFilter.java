@@ -14,7 +14,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -27,7 +28,7 @@ import java.util.Objects;
  * @Author:SCBC_LiYongJie
  * @time:2021/11/25
  */
-public class LoginVerifyFilter extends UsernamePasswordAuthenticationFilter {
+public class LoginVerifyFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final Logger log = LoggerFactory.getLogger(LoginVerifyFilter.class);
 
@@ -44,7 +45,9 @@ public class LoginVerifyFilter extends UsernamePasswordAuthenticationFilter {
                              ObjectMapper objectMapper,
                              GeneratorTokenFeign generatorTokenFeign,
                              RedisUtil redisUtil) {
-        super(authenticationManager);
+        //这里我们需要更改固定的登陆拦截路径
+        super(new AntPathRequestMatcher("/sharedkitchen/login",
+                "POST"),authenticationManager);
         this.redisUtil=redisUtil;
         this.generatorTokenFeign=generatorTokenFeign;
         this.objectMapper=objectMapper;
@@ -96,10 +99,9 @@ public class LoginVerifyFilter extends UsernamePasswordAuthenticationFilter {
         }
 
         String token = generatorTokenFeign.generatorToken(userDetails.getUsername(),getRole(userDetails));
-        cacheToken(userDetails.getUsername(),token);
 
         log.info("[successfulAuthentication--------token----:]{}",token);
-        response.setHeader("token", TOKENPREFIX + token);
+        response.setHeader(TOKENPREFIX, token);
         chain.doFilter(request,response);
     }
 
@@ -120,10 +122,6 @@ public class LoginVerifyFilter extends UsernamePasswordAuthenticationFilter {
         return isOnline != null && isOnline;    //<==>isOnline == null ? false : isOnline;
     }
 
-    private void cacheToken(String phoneNumber,String token){
-        redisUtil.delete(IDPREFIX+phoneNumber);
-        redisUtil.set(IDPREFIX+phoneNumber,token);
-    }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request,

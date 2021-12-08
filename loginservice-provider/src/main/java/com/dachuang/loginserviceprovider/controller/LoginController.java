@@ -2,6 +2,8 @@ package com.dachuang.loginserviceprovider.controller;
 
 import com.dachuang.loginserviceprovider.result.Result;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -11,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LoginController {
 
-    @PostMapping("/login")
+    @PostMapping("/sharedkitchen/login")
     public Result<String> login(){
-        return Result.signSuccess();
+        return Result.loginSuccess();
     }
 
 }

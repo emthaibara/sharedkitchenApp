@@ -44,8 +44,10 @@ public class AuthorizeConfigManager implements ReactiveAuthorizationManager<Auth
                 if (antPathMatcher.match(authorityAuthority, path)) {
                     log.info(String.format("用户请求API校验通过，GrantedAuthority:{%s}  Path:{%s} ", authorityAuthority, path));
                     //授权通过
+                    log.info("AuthorizationDecision true");
                     return new AuthorizationDecision(true);
                 }
+                log.info("AuthorizationDecision false");
             }
             //授权失败
             return new AuthorizationDecision(false);
@@ -63,5 +65,4 @@ public class AuthorizeConfigManager implements ReactiveAuthorizationManager<Auth
                 }))
                 .flatMap(d -> Mono.empty());
     }
-
 }

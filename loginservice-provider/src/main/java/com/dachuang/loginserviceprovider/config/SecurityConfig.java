@@ -18,6 +18,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.annotation.Resource;
 
@@ -40,15 +43,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private RedisUtil redisUtil;
 
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/login").authenticated()
+                .antMatchers("/sharedkitchen/login").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .cors()
                 .and()
-                .addFilter(new LoginVerifyFilter(authenticationManagerBean(),objectMapper(),generatorTokenFeign,redisUtil))
+                .addFilterBefore(new LoginVerifyFilter(authenticationManagerBean(),objectMapper(),generatorTokenFeign,redisUtil), UsernamePasswordAuthenticationFilter.class)
                 .csrf().disable()               //CRSF禁用，因为不使用session
                 .sessionManagement().disable()      //禁用session
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

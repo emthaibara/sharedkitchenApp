@@ -25,7 +25,7 @@ public class JwtUtil {
     private static final long EXPIREDTIME = 15L;
 
     public static final String TOKENKEY = "token";
-
+    private static final String IDPREFIX = "id";
     @Resource
     private RedisUtil redisUtil;
 
@@ -45,6 +45,7 @@ public class JwtUtil {
         log.info("username:"+username+" token:"+token+" salt:"+salt);
         //redis缓存token-----salt并设置过期时间
         redisUtil.set(TOKENKEY+token,salt,RedisUtil.TOKEN_EXPIREDTIME);
+        redisUtil.set(IDPREFIX+username,token,RedisUtil.TOKEN_EXPIREDTIME);
         return token;
     }
 

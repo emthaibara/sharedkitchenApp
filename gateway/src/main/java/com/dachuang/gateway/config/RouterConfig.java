@@ -1,5 +1,6 @@
 package com.dachuang.gateway.config;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +24,7 @@ public class RouterConfig {
                         .path("/sharedkitchen/sign")
                         .uri("lb://signservice-provider"))
                 .route(p -> p
-                        .path("/login")
+                        .path("/sharedkitchen/login")
                         .uri("lb://loginservice-provider"))
                 .build();
     }

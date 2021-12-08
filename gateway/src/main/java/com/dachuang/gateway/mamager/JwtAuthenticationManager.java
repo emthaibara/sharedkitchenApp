@@ -35,6 +35,4 @@ public class JwtAuthenticationManager implements ReactiveAuthenticationManager {
                         Collections.singleton(new SimpleGrantedAuthority(decodedJWT.getClaim(ROLE).asString()))
                 ));
     }
-
-
 }

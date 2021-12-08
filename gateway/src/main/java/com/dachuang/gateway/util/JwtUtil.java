@@ -88,8 +88,7 @@ public class JwtUtil {
 
         //redis缓存token-----salt并设置过期时间
         redisUtil.set(TOKENPREFIX+token,salt,RedisUtil.TOKEN_EXPIREDTIME);
-        redisUtil.set(IDPREFIX+username,token);
-
+        redisUtil.set(IDPREFIX+username,token,RedisUtil.TOKEN_EXPIREDTIME);
         return token;
     }
 

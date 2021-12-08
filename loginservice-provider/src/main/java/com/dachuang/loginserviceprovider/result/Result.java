@@ -29,10 +29,9 @@ public class Result<T> {
         this.msg= null;
     }
 
-    public static Result<String> signSuccess() {
-        return new Result<>("Sign success");
+    public static Result<String> loginSuccess() {
+        return new Result<>("login success");
     }
-
     public int getCode() {
         return code;
     }
