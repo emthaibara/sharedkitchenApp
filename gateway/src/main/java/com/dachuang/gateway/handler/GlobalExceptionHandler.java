@@ -1,11 +1,8 @@
 package com.dachuang.gateway.handler;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.http.MediaType;
@@ -21,7 +18,7 @@ import java.nio.file.AccessDeniedException;
  * @Author:SCBC_LiYongJie
  * @time:2021/12/7
  */
-@Order(Ordered.HIGHEST_PRECEDENCE)
+@Order(-1)
 @Component
 public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
 

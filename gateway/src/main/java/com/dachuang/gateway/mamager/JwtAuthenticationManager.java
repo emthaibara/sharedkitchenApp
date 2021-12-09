@@ -1,6 +1,7 @@
 package com.dachuang.gateway.mamager;
 
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.dachuang.gateway.util.JwtUtil;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * @Author:SCBC_LiYongJie

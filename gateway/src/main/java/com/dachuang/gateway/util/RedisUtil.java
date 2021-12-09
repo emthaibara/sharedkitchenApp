@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 public class RedisUtil {
-
     private final Logger log = LoggerFactory.getLogger(RedisUtil.class);
 
     public static final long TOKEN_EXPIREDTIME = 30L;

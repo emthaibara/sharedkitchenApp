@@ -5,14 +5,13 @@ import com.dachuang.gateway.util.JwtUtil;
 import com.dachuang.gateway.util.RedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.Ordered;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
-import javax.annotation.Resource;
 import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 import java.util.List;
@@ -25,11 +24,12 @@ import java.util.Objects;
  *              Jwt的有效性进行判别，如果Jwt需要刷新，那么就刷新，如果过期并且过了刷新时间，那么久返回重登的消息，直接快速失败
  *              在这里主要是做的对jwt--token的有效性（包括该请求中是否携带toke令牌，判断其合法性），并做出相应处理
  */
-public class JwtFilter implements WebFilter {
+public class JwtFilter implements WebFilter ,Ordered{
 
     private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
     private static final List<String> IGNOREPATH = Arrays.asList("/sharedkitchen/login","/sharedkitchen/sign");
+
     private static final String TOKENPREFIX = "token";
     private static final Integer VERIFYSUCCESS = 0;
     private static final String ROLE = "role";
@@ -58,6 +58,7 @@ public class JwtFilter implements WebFilter {
         if (Objects.isNull(token)){
             return Mono.error(new AccessDeniedException(Result.resultToJsonString(new Result<>().error("不合法的请求，请携带令牌访问",null))));
         }
+
         log.info(token);
         //截取到了jwt-----检查是否过期以及是否需要刷新令牌，获得权限+username+以及其他附带的数据/这里暂时无
         if (!isExit(token)){
@@ -93,4 +94,8 @@ public class JwtFilter implements WebFilter {
         return httpRequest.getHeaders().getFirst(TOKENPREFIX);
     }
 
+    @Override
+    public int getOrder() {
+        return HIGHEST_PRECEDENCE;
+    }
 }

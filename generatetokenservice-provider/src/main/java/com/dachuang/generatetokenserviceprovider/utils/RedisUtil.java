@@ -21,7 +21,7 @@ public class RedisUtil {
 
 
     //测试用的token刷新时间是30秒（redis的缓存token的时间）
-    public static final long TOKEN_EXPIREDTIME = 30L;
+    public static final long TOKEN_EXPIREDTIME = 3000000L;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
