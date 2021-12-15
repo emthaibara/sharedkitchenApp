@@ -19,9 +19,8 @@ public class RedisUtil {
 
     private final Logger log = LoggerFactory.getLogger(RedisUtil.class);
 
-
     //测试用的token刷新时间是30秒（redis的缓存token的时间）
-    public static final long TOKEN_EXPIREDTIME = 3000000L;
+    public static final long TOKEN_EXPIREDTIME = 60*1000L;
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;

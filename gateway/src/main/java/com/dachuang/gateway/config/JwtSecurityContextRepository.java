@@ -1,12 +1,9 @@
 package com.dachuang.gateway.config;
 
 import com.dachuang.gateway.mamager.JwtAuthenticationManager;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
@@ -15,15 +12,11 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * @Author:SCBC_LiYongJie
  * @time:2021/12/6
  */
-
 @Component
 public class JwtSecurityContextRepository implements ServerSecurityContextRepository {
 
@@ -43,8 +36,10 @@ public class JwtSecurityContextRepository implements ServerSecurityContextReposi
     public Mono<SecurityContext> load(ServerWebExchange exchange) {
         String token = exchange.getRequest().getHeaders().getFirst(TOKENHEADER);
         log.info(token);
+
         return jwtAuthenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(token, null)
         ).map(SecurityContextImpl::new);
     }
+
 }

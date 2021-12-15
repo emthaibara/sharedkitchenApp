@@ -1,5 +1,7 @@
 package com.dachuang.gateway.handler;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.dachuang.gateway.exception.BaseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.reactive.error.ErrorWebExceptionHandler;
@@ -31,7 +33,12 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
             return Mono.error(ex);
         }
         response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-        if (ex instanceof AccessDeniedException) {
+
+        if (ex instanceof AccessDeniedException ||
+                ex instanceof JWTVerificationException ||
+                ex instanceof BaseException
+                ) {
+
             log.error(ex.getMessage());
             return response
                     .writeWith(Mono.fromSupplier(() -> {
@@ -39,6 +46,7 @@ public class GlobalExceptionHandler implements ErrorWebExceptionHandler {
                             return bufferFactory.wrap(ex.getMessage().getBytes(StandardCharsets.UTF_8));
                     }));
         }
+
         log.error(ex.getMessage());
         //其他异常暂时不做处理
         return Mono.error(ex);

@@ -46,15 +46,12 @@ public class JwtUtil {
             JWT.require(Algorithm.HMAC256(salt))
                     .withIssuer(ISSUER)
                     .build().verify(token);
-        }catch (AlgorithmMismatchException e){
-            log.error(e.getMessage());
-            return 1;
         }catch (TokenExpiredException e){
             log.error(e.getMessage());
-            return 2;
-        }catch (JWTVerificationException e){
+            return 1;
+        }catch (AlgorithmMismatchException e){
             log.error(e.getMessage());
-            return 3;
+            return 2;
         }
         return 0;
     }
@@ -68,14 +65,12 @@ public class JwtUtil {
             log.error(e.getMessage());
             return e.getMessage();
         }
-        return "ok";
+        return null;
     }
 
     //生成token
     public String generateToken(String username,String role) {
         String salt = BCrypt.gensalt();
-        System.out.println(salt);
-
         String token = JWT.create()
                 .withIssuer(ISSUER)
                 .withSubject(username)    //设置主题
@@ -84,8 +79,7 @@ public class JwtUtil {
                 .withIssuedAt(new Date())       //发行时间
                 .sign(Algorithm.HMAC256(salt));
 
-        log.info("username:"+username+" token:"+token+" salt:"+salt);
-
+        log.info("username:"+username+"role:"+role+" token:"+token+" salt:"+salt);
         //redis缓存token-----salt并设置过期时间
         redisUtil.set(TOKENPREFIX+token,salt,RedisUtil.TOKEN_EXPIREDTIME);
         redisUtil.set(IDPREFIX+username,token,RedisUtil.TOKEN_EXPIREDTIME);

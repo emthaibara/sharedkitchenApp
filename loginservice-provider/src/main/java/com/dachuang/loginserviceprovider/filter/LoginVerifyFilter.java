@@ -112,13 +112,19 @@ public class LoginVerifyFilter extends AbstractAuthenticationProcessingFilter {
         return null;
     }
 
-    private void deleteCacheToken(String phoneNumber) {
-        String cacheToken = redisUtil.get(IDPREFIX+phoneNumber);
+    private void deleteCacheToken(String username) {
+        String cacheToken = redisUtil.get(IDPREFIX+username);
+        /*
+               删除：
+                id username -- jwt
+                token jwt -- salt
+         */
+        redisUtil.delete(IDPREFIX+username);
         redisUtil.delete(TOKENPREFIX+cacheToken);
     }
 
-    private Boolean isOnline(String phoneNumber){
-        Boolean isOnline = redisUtil.hasKey(IDPREFIX+phoneNumber);
+    private Boolean isOnline(String username){
+        Boolean isOnline = redisUtil.hasKey(IDPREFIX+username);
         return isOnline != null && isOnline;    //<==>isOnline == null ? false : isOnline;
     }
 

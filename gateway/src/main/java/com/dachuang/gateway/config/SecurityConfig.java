@@ -6,16 +6,16 @@ import com.dachuang.gateway.util.JwtUtil;
 import com.dachuang.gateway.util.RedisUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authorization.AuthorityReactiveAuthorizationManager;
+import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.WebFilter;
 
 import javax.annotation.Resource;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * @Author:SCBC_LiYongJie
@@ -40,14 +40,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http){
-        http.securityContextRepository(jwtSecurityContextRepository)
-                .authenticationManager(jwtAuthenticationManager)
-                .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/NONMEMBER/*").hasAnyRole("NONMEMBER","MOMBER")
-                        .pathMatchers("/MEMBER/*").hasAnyRole("MOMBER","MERCHANT")
-                        .pathMatchers("/MERCHANT/*").hasRole("MERCHANT")
-                        .anyExchange().permitAll()
-                )
+
+        http.authenticationManager(jwtAuthenticationManager)
+                .securityContextRepository(jwtSecurityContextRepository)
+                .addFilterBefore(new JwtFilter(redisUtil,jwtUtil), SecurityWebFiltersOrder.REACTOR_CONTEXT)
+                .authorizeExchange()
+                .pathMatchers("/NONMEMBER").hasAnyRole("NONMEMBER","MOMBER")
+                .pathMatchers("/MEMBER").hasAnyRole("MOMBER","MERCHANT")
+                .pathMatchers("/MERCHANT").hasRole("MERCHANT")
+                .anyExchange().permitAll()
+                .and()
                 .logout().disable()
                 .formLogin().disable()
                 .cors().disable()
@@ -55,14 +57,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-
-    @Bean
-    public WebFilter webFilter(){
-        return new JwtFilter(redisUtil,jwtUtil);
-    }
-
     @Bean
     public AntPathMatcher antPathMatcher(){
         return new AntPathMatcher();
     }
+
+
+
+//    @Bean
+//    public WebFilter webFilter(){
+//        return new JwtFilter(redisUtil,jwtUtil);
+//    }
+
 }

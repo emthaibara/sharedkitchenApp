@@ -22,10 +22,11 @@ public class JwtUtil {
     private static final Logger log = LoggerFactory.getLogger(JwtUtil.class);
 
     //设置过期失效
-    private static final long EXPIREDTIME = 2L;
+    private static final long EXPIREDTIME = 1000000000*15L;
 
     public static final String TOKENKEY = "token";
     private static final String IDPREFIX = "id";
+
     @Resource
     private RedisUtil redisUtil;
 
